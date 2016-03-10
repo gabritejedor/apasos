@@ -27,4 +27,14 @@
         android:id="@+id/detener"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/iniciar"
+        android:layout_alignEnd="@+id/iniciar" />
+
 </RelativeLayout>
