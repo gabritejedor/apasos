@@ -1,6 +1,7 @@
 package com.example.gabri.apasos;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -47,16 +48,20 @@ public class Principal extends AppCompatActivity {
         iniciar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startService(new Intent(Principal.this,Gps.class));
+                startService(new Intent(Principal.this,GPS.class));
             }
         });
         Button detener = (Button) findViewById(R.id.detener);
         detener.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopService(new Intent(Principal.this,Gps.class));
+                stopService(new Intent(Principal.this,GPS.class));
             }
         });
+
+        //
+
+
     }
 
     @Override
