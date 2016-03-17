@@ -46,7 +46,22 @@ public class GestorBD {
         }
     }
 
-    public List<Coordenada> leerCoordenadas() {
+    public void guardarSesion(String fecha){
+        if (bd.isOpen() && fecha.length() != 0) {
+
+            ContentValues values = new ContentValues();
+
+            values.put("fecha",fecha);
+            bd.insert("sesion", null, values);
+        }
+
+    }
+
+    /*
+        METODO PARA RECUPERAR SESION
+     */
+
+    public List<Coordenada> leerCoordenadas(Integer sesion) {
 
         List<Coordenada> listaCoordenadas = new ArrayList<>();
 
@@ -59,7 +74,8 @@ public class GestorBD {
 
     private class BDHelper extends SQLiteOpenHelper {
 
-        private String tablaCoordenadas = "CREATE TABLE coordenada ( id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, latitud REAL NOT NULL , longitud REAL NOT NULL);";
+        private String tablaSesiones = "CREATE TABLE sesion (id INTEGER PRIMARY KEY AUTOINCREMENT, fecha TEXT NOT NULL );";
+        private String tablaCoordenadas = "CREATE TABLE coordenada ( id INTEGER PRIMARY KEY AUTOINCREMENT, id_sesion INTEGER,latitud REAL NOT NULL , longitud REAL NOT NULL, FOREIGN KEY(id_sesion) REFERENCES sesion(id));";
 
         public BDHelper(Context context, String name, CursorFactory factory, int version) {
             super(context, name, factory, version);
