@@ -8,7 +8,7 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.Intent;
-
+import android.support.v4.content.ContextCompat;
 import android.os.IBinder;
 import android.widget.Toast;
 import android.location.Location;
@@ -25,9 +25,10 @@ public class Gps extends IntentService {
     private Principal main = new Principal();
 
     //coordenadas
-    private double latitud;  //coordenada Y
-    private double longitud; //coordenada X
+   private Coordenada coordenada;
 
+    // Referencia para el gestorbd que nos comunica con el SQLite
+    private GestorBD gestorbd = null;
 
     // constructor
     public Gps() {
@@ -41,17 +42,25 @@ public class Gps extends IntentService {
         System.out.println("CREADO");
         Toast.makeText(this,"servicio creado",Toast.LENGTH_SHORT).show();
 
+        // Arrancamos gestor de BD
+        gestorbd = new GestorBD(this);
+        gestorbd.abrirBD();
+
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        System.out.println(getBaseContext());
+
         // Define a listener that responds to location updates
          locationListener = new LocationListener(){
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                latitud=location.getLatitude();
-                longitud=location.getLongitude();
 
-                //guardar datos en SQLite
+                //Objeto coordenada
+                coordenada= new Coordenada();
+                // leemos y guardamos latitud y longitud
+                coordenada.setLatitud(location.getLatitude());
+                coordenada.setLongitud(location.getLongitude());
 
+                //guardar objeto Coordenada en SQLite
+                gestorbd.guardarCoordenada(coordenada);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -87,6 +96,9 @@ public class Gps extends IntentService {
     public void onDestroy(){
         Toast.makeText(this,"servicio detenido",Toast.LENGTH_SHORT).show();
         System.out.println("DETENIDO");
+
+        // Cerramos la base de datos
+        gestorbd.cerrarBD();
     }
 
     @Override
