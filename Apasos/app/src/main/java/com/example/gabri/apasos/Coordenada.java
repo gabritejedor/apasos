@@ -11,6 +11,12 @@ public class Coordenada {
     private double latitud;    //coordenada Y
     private double longitud;   //coordenada X
 
+
+    //Constructores
+    public Coordenada(){
+
+    }
+
     public Coordenada(double latitud,double longitud){
         this.latitud=latitud;
         this.longitud=longitud;
