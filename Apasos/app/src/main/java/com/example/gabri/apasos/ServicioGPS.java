@@ -5,19 +5,23 @@ package com.example.gabri.apasos;
  */
 
 import android.Manifest;
-import android.app.IntentService;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.content.Context;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
-public class ServicioGPS extends IntentService {
+public class ServicioGPS extends Service {
+
 
     //coordenadas
     private Coordenada coordenada;
@@ -26,17 +30,30 @@ public class ServicioGPS extends IntentService {
     private GestorBD gestorbd = null;
 
     // Acquire a reference to the system Location Manager
-    private LocationManager locationManager= (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+    private LocationManager locationManager;
     // Define a listener that responds to location updates
     private LocationListener locationListener;
 
-    // Constructor
-    public ServicioGPS() {
-        super("GPS");
-        gestorbd=new GestorBD(this);
-        gestorbd.abrirBD();
+    @Override
+    public void onCreate() {
+      gestorbd = new GestorBD(this);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+       gestorbd.abrirBD();
+       Toast.makeText(this,"servicio creado",Toast.LENGTH_SHORT).show();
+        leerCoordenada();
     }
 
+    @Override
+    public IBinder onBind(Intent intent) {
+       return  null;
+    }
+
+    @Override
+    public void onDestroy() {
+        Toast.makeText(this,"servicio destruido",Toast.LENGTH_SHORT).show();
+           gestorbd.cerrarBD();
+        super.onDestroy();
+    }
 
     // Metodo que lee cordenadas y las guarda en la BD
     private void leerCoordenada() {
@@ -50,9 +67,11 @@ public class ServicioGPS extends IntentService {
                 System.out.println(location.getLatitude());
                 System.out.println(location.getLongitude());
 
-                Coordenada c = new Coordenada(location.getLatitude(),location.getLongitude());
+                Coordenada c = new Coordenada(location.getLatitude(), location.getLongitude());
+
+                gestorbd.guardarSesion("28/02/1989");
                 //GUARDAMOS EN LA BD
-                gestorbd.guardarCoordenada(c);
+             gestorbd.guardarCoordenada(c);
 
             }
 
@@ -79,17 +98,5 @@ public class ServicioGPS extends IntentService {
             //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
     }
-
-
-
-
-    @Override
-    protected void onHandleIntent(Intent intent) {
-
-            leerCoordenada();
-            Log.i("EMPEZADO","servicio empezado");
-
-    }
-
 
 }

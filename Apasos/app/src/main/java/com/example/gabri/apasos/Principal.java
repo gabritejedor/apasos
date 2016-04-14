@@ -19,6 +19,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 public class Principal extends AppCompatActivity {
 
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -59,6 +60,7 @@ public class Principal extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 stopService(new Intent(Principal.this, ServicioGPS.class));
+
             }
         });
 

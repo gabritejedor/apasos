@@ -10,8 +10,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 import java.lang.reflect.Array;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,18 +23,25 @@ public class GestorBD {
     private SQLiteDatabase bd = null;
     private BDHelper helper = null;
 
-    public GestorBD(Context context) {
+   public GestorBD(Context context) {
         helper =new BDHelper(context,"Coordenadas.sqlite",null,1);
     }
 
     public void abrirBD() {
-        if (bd == null)
+        if (bd == null) {
             bd = helper.getWritableDatabase();
+            System.out.println("crear bd");
+        }else {
+            System.out.println("bd abierta");
+        }
     }
 
     public void cerrarBD() {
-        if (bd != null)
+
+        if (bd != null) {
             bd.close();
+            System.out.println("bd cerrada");
+        }
     }
 
     public void guardarCoordenada(Coordenada c) {
@@ -57,6 +66,7 @@ public class GestorBD {
             ContentValues values = new ContentValues();
 
             values.put("fecha",fecha);
+
             bd.insert("ruta", null, values);
         }
 
@@ -163,8 +173,8 @@ public class GestorBD {
 
     private class BDHelper extends SQLiteOpenHelper {
 
-        private String tablaSesiones = "CREATE TABLE ruta (id INTEGER PRIMARY KEY AUTOINCREMENT, fecha TEXT NOT NULL );";
-        private String tablaCoordenadas = "CREATE TABLE coordenada ( id INTEGER PRIMARY KEY AUTOINCREMENT, id_ruta INTEGER,latitud REAL NOT NULL , longitud REAL NOT NULL, FOREIGN KEY(id_ruts) REFERENCES ruta(id));";
+       private String tablaSesiones = "CREATE TABLE IF NOT EXISTS ruta (id INTEGER PRIMARY KEY AUTOINCREMENT, fecha TEXT NOT NULL );";
+        private String tablaCoordenadas = "CREATE TABLE IF NOT EXISTS coordenada ( id INTEGER PRIMARY KEY AUTOINCREMENT, id_ruta INTEGER,latitud REAL NOT NULL , longitud REAL NOT NULL, FOREIGN KEY(id_ruts) REFERENCES ruta(id));";
 
         public BDHelper(Context context, String name, CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -175,8 +185,11 @@ public class GestorBD {
 
             if (!db.isReadOnly()) {
                 // Enable foreign key constraints
+              //  db.execSQL("PRAGMA foreign_keys=ON;");
+                db.execSQL(tablaSesiones);
                 db.execSQL("PRAGMA foreign_keys=ON;");
                 db.execSQL(tablaCoordenadas);
+
             }
 
         }
@@ -185,11 +198,12 @@ public class GestorBD {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
             if (!db.isReadOnly()) {
-                db.execSQL("DROP TABLE IF EXISTS coordenada");
 
+
+                db.execSQL("DROP TABLE IF EXISTS coordenada");
                 // Enable foreign key constraints
                 db.execSQL("PRAGMA foreign_keys=ON;");
-                db.execSQL(tablaCoordenadas);
+                db.execSQL(tablaSesiones);
             }
 
         }
