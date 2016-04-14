@@ -7,9 +7,20 @@ import java.sql.Timestamp;
  */
 public class Coordenada {
 
-    private Timestamp time;
+
     private double latitud;    //coordenada Y
     private double longitud;   //coordenada X
+
+
+    //Constructores
+    public Coordenada(){
+
+    }
+
+    public Coordenada(double latitud,double longitud){
+        this.latitud=latitud;
+        this.longitud=longitud;
+    }
 
     public double getLatitud() {
         return latitud;
@@ -27,11 +38,4 @@ public class Coordenada {
         this.longitud = longitud;
     }
 
-    public Timestamp getTime() {
-        return time;
-    }
-
-    public void setTime(Timestamp time) {
-        this.time = time;
-    }
 }

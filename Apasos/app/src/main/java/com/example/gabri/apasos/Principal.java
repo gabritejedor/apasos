@@ -19,6 +19,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 public class Principal extends AppCompatActivity {
 
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -43,19 +44,23 @@ public class Principal extends AppCompatActivity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-        //boton iniciar
+
+        //Botón INICIAR
         Button iniciar = (Button) findViewById(R.id.iniciar);
         iniciar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startService(new Intent(Principal.this,GPS.class));
+                startService(new Intent(Principal.this,ServicioGPS.class));
             }
         });
+
+        //Botoón DETENER
         Button detener = (Button) findViewById(R.id.detener);
         detener.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopService(new Intent(Principal.this,GPS.class));
+                stopService(new Intent(Principal.this, ServicioGPS.class));
+
             }
         });
 
