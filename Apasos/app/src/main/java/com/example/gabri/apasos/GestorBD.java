@@ -6,6 +6,7 @@ package com.example.gabri.apasos;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -44,62 +45,62 @@ public class GestorBD {
         }
     }
 
-    public void guardarCoordenada(Coordenada c) {
+   public void guardarCoordenada(Coordenada c) {
         if (bd.isOpen() && c != null) {
-
-            ContentValues values = new ContentValues();
-
+            System.out.print("esta dentro de guardar coordenadas");
             int id_ruta = ultimaRuta();
-            values.put("id_ruta",id_ruta);
+            String sql = "insert into coordenada values(null," + id_ruta + "," + c.getLatitud() + "," + c.getLongitud() + ")";
 
-            values.put("latitud",c.getLatitud());
-            values.put("longitud", c.getLongitud());
+            System.out.print(sql);
 
-            bd.insert("coordenda", null, values);
+           // bd.execSQL("insert into coordenada values(null," + id_ruta + "," + c.getLatitud() + "," + c.getLongitud() + ")");
         }
     }
 
 
-    public void guardarSesion(String fecha){
-        if (bd.isOpen() && fecha.length() != 0) {
+    public void guardarSesion(java.sql.Date fecha){
+        if (bd.isOpen()) {
 
             ContentValues values = new ContentValues();
 
-            values.put("fecha",fecha);
 
-            bd.insert("ruta", null, values);
+
+            bd.execSQL("insert into ruta values (null," + fecha + ")");
         }
 
     }
+    public int numero_sesiones()
+    {
+        Cursor cur = bd.rawQuery("select * from ruta",null);
+        return cur.getCount();
+    }
+    public int numero_coordenadas()
+    {
+        Cursor cursor = bd.rawQuery("select * from coordenada",null);
+        return cursor.getCount();
+    }
 
 
-    /*
-        METODOS PARA RECUPERAR SESION
-     */
 
-    private int ultimaRuta(){
+      //  METODOS PARA RECUPERAR SESION
+
+
+   private int  ultimaRuta(){
 
 
         int ultimaRuta=0;
 
         if (bd.isOpen()){
 
-            String tabla = "ruta";
-            String[] columnas = new String[]{"id"};
-            String where = null;
-            String[] argumentoswhere = null;
-            String groupby = null;
-            String having = null;
-            String orderby = "id DESC";
-            String limit = null;
 
-            Cursor c1 = bd.query(tabla, columnas, where, argumentoswhere,
-                    groupby, having, orderby, limit);
+
+            Cursor c1 = bd.rawQuery("select * from ruta order by id DESC", null);
 
             if (c1.moveToFirst()) {
-                ultimaRuta=Integer.parseInt(c1.getString(0));
+                ultimaRuta=(c1.getInt(0));
             }
         }
+       System.out.print(ultimaRuta);
         return ultimaRuta;
     }
 
@@ -171,10 +172,11 @@ public class GestorBD {
         return listaCoordenadas;
     }
 
+
     private class BDHelper extends SQLiteOpenHelper {
 
-       private String tablaSesiones = "CREATE TABLE IF NOT EXISTS ruta (id INTEGER PRIMARY KEY AUTOINCREMENT, fecha TEXT NOT NULL );";
-        private String tablaCoordenadas = "CREATE TABLE IF NOT EXISTS coordenada ( id INTEGER PRIMARY KEY AUTOINCREMENT, id_ruta INTEGER,latitud REAL NOT NULL , longitud REAL NOT NULL, FOREIGN KEY(id_ruts) REFERENCES ruta(id));";
+       private String tablaSesiones = "CREATE TABLE IF NOT EXISTS ruta (id INTEGER PRIMARY KEY AUTOINCREMENT, fecha date NOT NULL );";
+        private String tablaCoordenadas = "CREATE TABLE IF NOT EXISTS coordenada ( id INTEGER PRIMARY KEY AUTOINCREMENT, id_ruta INTEGER,latitud REAL NOT NULL , longitud REAL NOT NULL, FOREIGN KEY(id_ruta) REFERENCES ruta(id));";
 
         public BDHelper(Context context, String name, CursorFactory factory, int version) {
             super(context, name, factory, version);
@@ -185,7 +187,7 @@ public class GestorBD {
 
             if (!db.isReadOnly()) {
                 // Enable foreign key constraints
-              //  db.execSQL("PRAGMA foreign_keys=ON;");
+               db.execSQL("PRAGMA foreign_keys=ON;");
                 db.execSQL(tablaSesiones);
                 db.execSQL("PRAGMA foreign_keys=ON;");
                 db.execSQL(tablaCoordenadas);

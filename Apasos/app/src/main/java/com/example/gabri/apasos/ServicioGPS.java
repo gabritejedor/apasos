@@ -20,6 +20,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import static android.widget.Toast.*;
+
 public class ServicioGPS extends Service {
 
 
@@ -36,11 +38,16 @@ public class ServicioGPS extends Service {
 
     @Override
     public void onCreate() {
-      gestorbd = new GestorBD(this);
+     gestorbd = new GestorBD(this);
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
        gestorbd.abrirBD();
-       Toast.makeText(this,"servicio creado",Toast.LENGTH_SHORT).show();
+       makeText(this, "servicio creado", LENGTH_SHORT).show();
         leerCoordenada();
+        makeText(this, String.valueOf(gestorbd.numero_sesiones()), LENGTH_SHORT).show();
+        Toast.makeText(this, String.valueOf("numero de coordenadas"+gestorbd.numero_coordenadas()), LENGTH_SHORT).show();
+        java.util.Date utilDate = new java.util.Date();
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        gestorbd.guardarSesion(sqlDate);
     }
 
     @Override
@@ -50,16 +57,17 @@ public class ServicioGPS extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this,"servicio destruido",Toast.LENGTH_SHORT).show();
-           gestorbd.cerrarBD();
+       makeText(this, "servicio destruido", LENGTH_SHORT).show();
+
+        gestorbd.cerrarBD();
         super.onDestroy();
     }
 
     // Metodo que lee cordenadas y las guarda en la BD
     private void leerCoordenada() {
+         locationListener = new LocationListener() {
 
-
-        locationListener = new LocationListener() {
+            //LOCATION CHANGE
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
 
@@ -69,11 +77,13 @@ public class ServicioGPS extends Service {
 
                 Coordenada c = new Coordenada(location.getLatitude(), location.getLongitude());
 
-                gestorbd.guardarSesion("28/02/1989");
+
                 //GUARDAMOS EN LA BD
-             gestorbd.guardarCoordenada(c);
+            gestorbd.guardarCoordenada(c);
 
             }
+
+
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
@@ -94,8 +104,8 @@ public class ServicioGPS extends Service {
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 10, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, locationListener);
         }
     }
 
