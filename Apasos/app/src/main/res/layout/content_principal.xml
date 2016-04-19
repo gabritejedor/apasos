@@ -27,4 +27,14 @@
         android:id="@+id/detener"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ver mapa"
+        android:id="@+id/mapa"
+        android:layout_below="@+id/detener"
+        android:layout_alignLeft="@+id/detener"
+        android:layout_alignStart="@+id/detener"
+        android:layout_marginTop="113dp" />
 </RelativeLayout>

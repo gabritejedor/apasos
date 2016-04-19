@@ -43,7 +43,7 @@ public class ServicioGPS extends Service {
        gestorbd.abrirBD();
        makeText(this, "servicio creado", LENGTH_SHORT).show();
         leerCoordenada();
-        makeText(this, String.valueOf(gestorbd.numero_sesiones()), LENGTH_SHORT).show();
+       Toast.makeText(this, String.valueOf(gestorbd.numero_sesiones()), LENGTH_SHORT).show();
         Toast.makeText(this, String.valueOf("numero de coordenadas"+gestorbd.numero_coordenadas()), LENGTH_SHORT).show();
         java.util.Date utilDate = new java.util.Date();
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());

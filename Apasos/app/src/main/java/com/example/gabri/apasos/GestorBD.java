@@ -12,10 +12,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.lang.reflect.Array;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class GestorBD {
@@ -29,12 +32,10 @@ public class GestorBD {
     }
 
     public void abrirBD() {
-        if (bd == null) {
+
             bd = helper.getWritableDatabase();
-            System.out.println("crear bd");
-        }else {
-            System.out.println("bd abierta");
-        }
+
+
     }
 
     public void cerrarBD() {
@@ -44,16 +45,31 @@ public class GestorBD {
             System.out.println("bd cerrada");
         }
     }
+    //preparamos posicion para pasar al mapa
+
+
+    public PolylineOptions linea(int id){
+
+
+        ArrayList<Coordenada> ListaCoordenadas =leerCoordenadas(id);
+        Iterator<Coordenada> i = ListaCoordenadas.iterator();
+        PolylineOptions linea = new PolylineOptions();
+        while (i.hasNext()){
+            Coordenada aux = i.next();
+            linea.add(new LatLng(aux.getLatitud(),aux.getLongitud()));
+        }
+
+    return linea;
+
+
+    }
 
    public void guardarCoordenada(Coordenada c) {
         if (bd.isOpen() && c != null) {
             System.out.print("esta dentro de guardar coordenadas");
             int id_ruta = ultimaRuta();
             String sql = "insert into coordenada values(null," + id_ruta + "," + c.getLatitud() + "," + c.getLongitud() + ")";
-
-            System.out.print(sql);
-
-           // bd.execSQL("insert into coordenada values(null," + id_ruta + "," + c.getLatitud() + "," + c.getLongitud() + ")");
+            bd.execSQL(sql);
         }
     }
 
@@ -135,40 +151,20 @@ public class GestorBD {
 
         return rutas;
     }
-    public List<Coordenada> leerCoordenadas(String ruta) {
+    public ArrayList<Coordenada> leerCoordenadas(int ruta) {
 
-        List<Coordenada> listaCoordenadas = new ArrayList<>();
+        ArrayList<Coordenada> listaCoordenadas = new ArrayList<>();
+        String sql = "select * from coordenada where id_ruta="+ruta;
+        Cursor c1 = bd.rawQuery(sql,null);
+        // Recorremos el cursor hasta que no haya más registros
 
-        if (bd.isOpen()) {
+                while (c1.moveToNext()) {
 
-            String tabla = "coordenada";
-            String[] columnas = new String[]{"latitud", "longitud"};
-            String where = "id_ruta=?";
-            String[] argumentoswhere = new String[]{ruta};
-            String groupby = null;
-            String having = null;
-            String orderby = null;
-            String limit = null;
-
-            Cursor c1 = bd.query(tabla, columnas, where, argumentoswhere,
-                    groupby, having, orderby, limit);
-
-            if (c1.moveToFirst()) {
-
-                // Recorremos el cursor hasta que no haya más registros
-                do {
-
-                    Double latitud = Double.parseDouble(c1.getString(0));
-
-                    Double longitud = Double.parseDouble(c1.getString(1));
-
+                    Double latitud = c1.getDouble(0);
+                    Double longitud = c1.getDouble(1);
                     Coordenada c = new Coordenada(latitud,longitud);
                     listaCoordenadas.add(c);
-                } while (c1.moveToNext());
-            }
-        }
-
-
+                }
         return listaCoordenadas;
     }
 

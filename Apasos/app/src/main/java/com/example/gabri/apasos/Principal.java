@@ -63,6 +63,18 @@ public class Principal extends AppCompatActivity {
 
             }
         });
+        //boton mapa
+        Button mapa = (Button) findViewById(R.id.mapa);
+        mapa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent Mapa = new Intent(getApplicationContext(), Maps.class);
+                startActivity(Mapa);
+
+            }
+        });
+
+
 
         //
 
